@@ -6,6 +6,8 @@ import { connectDB } from "./DB/Database.js";
 import userRoutes from "./routes/userRoutes.js";
 import expenseRoutes from "./routes/expenseRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js"
+import { requireAuth } from "./middleware/authMiddleware.js";
+import Expense from "./models/expenseSchema.js";
 
 
 // ✅ Load Environment Variables
@@ -24,14 +26,14 @@ app.use(cors()); // Enable CORS
 
 // ✅ API Routes
 app.use("/api/users", userRoutes); //  ✅ User authentication routes
-app.use("/api/expenses", expenseRoutes); // ✅ Expense management routes
+app.use("/api/expenses", requireAuth, expenseRoutes); // ✅ Expense management routes, login required
 // app.put("/api/expenses/:id",transactionRoutes);
 app.put("/api/expenses/:id", async (req, res) => {
   const { id } = req.params;
   const updatedExpense = req.body;
 
   try {
-    const expense = await ExpenseModel.findByIdAndUpdate(id, updatedExpense, { new: true });
+    const expense = await Expense.findByIdAndUpdate(id, updatedExpense, { new: true });
     if (!expense) {
       return res.status(404).json({ success: false, message: "Expense not found" });
     }

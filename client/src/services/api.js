@@ -8,6 +8,27 @@ const API = axios.create({
   },
 });
 
+//  Send the login token with every request, including direct axios calls in components
+const attachToken = (config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+};
+
+//  Send the user back to login when the token is missing or expired
+const handleUnauthorized = (error) => {
+  if (error.response?.status === 401) {
+    localStorage.removeItem("token");
+    window.location.assign("/login");
+  }
+  return Promise.reject(error);
+};
+
+[axios, API].forEach((client) => {
+  client.interceptors.request.use(attachToken);
+  client.interceptors.response.use((response) => response, handleUnauthorized);
+});
+
 //  Register User
 export const registerUser = async (userData) => {
   try {

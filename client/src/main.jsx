@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import Transaction from "./components/Transaction";
 import Report from "./components/Report";  // ✅ Import Report correctly
 import "./components/style.css"; 
+import "./services/api";  // ✅ Attaches the login token to every request
 
 // Sample chart data (for debugging)
 const sampleData = [
